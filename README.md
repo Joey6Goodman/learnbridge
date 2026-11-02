@@ -4,7 +4,7 @@
 
 Live demo: **https://joey6goodman.github.io/learnbridge/**
 Training team view: **https://joey6goodman.github.io/learnbridge/#admin**
-Sample evaluation report: [analysis/report/report.md](analysis/report/report.md)
+Sample evaluation report: [report.md](report.md)
 
 ---
 
@@ -41,7 +41,7 @@ Entries made in the participant view are added to the training team view in real
 
 ## Evaluation report (Python)
 
-`analysis/analyze.py` turns the exported CSV into a Markdown report with charts:
+`analyze.py` turns the exported CSV into a Markdown report with charts:
 
 - the Kirkpatrick funnel;
 - paired t-tests and effect sizes (Cohen's dz) for each skill, before vs after;
@@ -51,9 +51,8 @@ Entries made in the participant view are added to the training team view in real
 - notes on the limits of the evidence (self-rating, voluntary follow-up, no control group).
 
 ```bash
-cd analysis
 pip install -r requirements.txt
-python analyze.py                        # sample data -> report/report.md
+python analyze.py                        # sample data -> report.md and charts
 python analyze.py my_export.csv -o out/  # your own export from the training team view
 ```
 
@@ -70,13 +69,13 @@ In the sample data, 63% of participants rated their course highly but only 27% r
 
 ```
 learnbridge/
-├── index.html              # the whole web app
+├── index.html          # the whole web app
 ├── README.md
-└── analysis/
-    ├── analyze.py          # evaluation report generator
-    ├── requirements.txt
-    ├── sample_data.csv     # export of the simulated cohort
-    └── report/             # generated report and charts
+├── analyze.py          # evaluation report generator
+├── requirements.txt
+├── sample_data.csv     # export of the simulated cohort
+├── report.md           # generated evaluation report
+└── funnel.png, skills.png, barriers.png   # report charts
 ```
 
 ## Design decisions
