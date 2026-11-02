@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LearnBridge: training impact, from needs to results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF2EF; --surface:#F9FBFA; --ink:#17302A; --muted:#566963; --line:#CBD5D0; --track:#DDE5E1;
+  --before:#7C8B9A; --after:#D29500; --teal:#2E6B5E; --note:#E1E9E5;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#111816; --surface:#18221F; --ink:#E3EBE7; --muted:#9AABA4; --line:#2E3C38; --track:#22302C;
+    --before:#8FA0B1; --after:#F0B429; --teal:#62B5A3; --note:#1E2A27;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#111816; --surface:#18221F; --ink:#E3EBE7; --muted:#9AABA4; --line:#2E3C38; --track:#22302C;
+  --before:#8FA0B1; --after:#F0B429; --teal:#62B5A3; --note:#1E2A27;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 "Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",system-ui,sans-serif;line-height:1.15;letter-spacing:-0.01em;margin:0}
+h2{font-size:1.35rem;margin-bottom:8px}
+h3{font-size:1.05rem;font-weight:500}
+p{margin:0 0 10px}
+.muted{color:var(--muted)}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--after);outline-offset:2px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{flex:none}
+.brand strong{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.15rem;display:block;line-height:1.1}
+.brand span{font-size:.78rem;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.role{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;flex:none}
+.role button{border:0;background:none;color:var(--muted);padding:7px 12px;border-radius:999px;font-weight:600;font-size:.85rem;cursor:pointer}
+.role button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+
+main{max-width:980px;margin:0 auto;padding:28px 16px 48px}
+.hero h1{font-size:clamp(1.75rem,4.6vw,2.7rem);font-weight:700;max-width:21ch;margin-bottom:12px}
+.hero p{color:var(--muted);max-width:62ch}
+.hero.admin h1{max-width:none}
+
+/* stepper: a real sequence, so numbers carry meaning */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;list-style:none;padding:0;margin:28px 0 32px}
+.steps button{width:100%;text-align:left;background:none;border:0;border-top:4px solid var(--track);padding:10px 2px 0;color:var(--muted);cursor:pointer}
+.steps .n{display:block;font-size:.8rem}
+.steps .l{display:block;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.05rem;font-weight:500}
+.steps button.done{border-top-color:var(--after)}
+.steps button.active{border-top-color:var(--ink);color:var(--ink)}
+
+.intro{margin-bottom:8px}
+.intro p{color:var(--muted);max-width:62ch}
+.key{font-size:.9rem}
+
+/* assessment */
+.skill{border:0;border-bottom:1px solid var(--line);margin:0;padding:18px 0;display:grid;gap:10px}
+.skill legend{padding:0;float:left;width:100%}
+.skill legend strong{display:block;font-weight:600}
+.skill legend span{display:block;color:var(--muted);font-size:.92rem}
+.scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;max-width:420px;clear:both}
+.scale label{position:relative}
+.scale input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.scale span{display:block;text-align:center;padding:10px 0;border:1px solid var(--line);border-radius:8px;font-weight:600;background:var(--surface)}
+.scale span.was{box-shadow:inset 0 -4px 0 var(--before)}
+.scale input:checked+span{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.scale input:focus-visible+span{outline:2px solid var(--after);outline-offset:2px}
+.level{font-size:.9rem;color:var(--muted);margin:0}
+.level em{font-style:normal;color:var(--before);margin-left:8px}
+
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px}
+.count{color:var(--muted);font-size:.9rem;margin-right:auto}
+.btn{font-weight:600;font-size:.95rem;line-height:1;padding:13px 20px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.small{padding:9px 14px;font-size:.88rem}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.link{background:none;border:0;padding:0;color:var(--teal);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.gap{margin-top:40px}
+.chart-wrap{position:relative;height:300px}
+.chart-wrap.radar{height:340px;max-width:440px}
+.chart-wrap.short{height:240px}
+
+.rec{margin-bottom:14px}
+.rec-skill{font-weight:600;margin-bottom:0}
+.course{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.course p{margin:2px 0 0;font-size:.9rem}
+
+.mycourse{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin:14px 0}
+.mycourse header{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.progress{height:6px;background:var(--track);border-radius:3px;margin:12px 0 8px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--after)}
+.modules{list-style:none;padding:0;margin:0}
+.modules li{padding:6px 0}
+.modules label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.modules input{accent-color:var(--teal);width:18px;height:18px;margin-top:2px;flex:none}
+.feedback{border-top:1px dashed var(--line);margin-top:14px;padding-top:14px}
+.stars{display:flex;gap:4px;margin-bottom:10px}
+.stars button{background:none;border:0;font-size:1.7rem;line-height:1;color:var(--track);cursor:pointer;padding:2px}
+.stars button.on{color:var(--after)}
+textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.feedback textarea{margin-bottom:10px}
+
+.empty{color:var(--muted);padding:6px 0}
+.note{background:var(--note);border-radius:8px;padding:12px 14px;font-size:.92rem;margin:12px 0 18px}
+
+.deltas{list-style:none;padding:0;margin:8px 0 0}
+.deltas li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.95rem}
+.delta{font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.delta.up{color:var(--ink);font-weight:600}
+
+.report{max-width:640px}
+.field{display:block;margin:0 0 18px}
+.field span{display:block;font-weight:600;margin-bottom:6px}
+.choices{border:0;padding:0;margin:0 0 18px}
+.choices legend{font-weight:600;margin-bottom:8px;padding:0}
+.choices label{display:flex;gap:10px;align-items:center;padding:11px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer;background:var(--surface)}
+.choices input{accent-color:var(--teal);width:18px;height:18px;margin:0}
+.sent h2{font-size:1.6rem}
+
+/* impact ladder: the one bold element */
+.filter{display:flex;align-items:center;gap:10px;margin-top:16px;max-width:460px}
+.filter span{font-weight:600;flex:none}
+.ladder{display:grid;gap:12px;margin-top:28px}
+.rung{display:grid;grid-template-columns:minmax(160px,250px) 1fr 92px;gap:16px;align-items:center}
+.rung .label small{display:block;color:var(--muted);font-size:.8rem}
+.rung .label span{display:block;font-size:.95rem;line-height:1.3}
+.bar{height:46px;background:var(--track);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--after);border-radius:4px;transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.rung.base .bar i{background:var(--before)}
+.ladder.grown .bar i{width:var(--w)}
+.fig{text-align:right;font-variant-numeric:tabular-nums}
+.fig strong{display:block;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.5rem;line-height:1}
+.fig span{font-size:.8rem;color:var(--muted)}
+.foot{font-size:.88rem;margin-top:14px;max-width:70ch}
+
+.table-wrap{overflow-x:auto;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:560px}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:.85rem;border-bottom:1px solid var(--line);padding:8px}
+td{padding:11px 8px;border-bottom:1px solid var(--line)}
+td.num,th.num{text-align:right}
+
+.stories{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:8px}
+blockquote{margin:0;padding:4px 0 4px 18px;border-left:3px solid var(--after)}
+blockquote p{font-size:1.02rem}
+blockquote footer{font-size:.85rem;color:var(--muted)}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.overlay[hidden]{display:none}
+.sheet{background:var(--surface);color:var(--ink);border-radius:14px;max-width:760px;width:100%;padding:20px;max-height:85vh;display:flex;flex-direction:column;gap:10px}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sheet textarea{flex:1;min-height:220px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;white-space:pre;overflow:auto}
+
+footer.site{max-width:980px;margin:0 auto;padding:0 16px 40px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:16px}
+
+@media (max-width:720px){
+  .two{grid-template-columns:1fr}
+  .rung{grid-template-columns:1fr 80px;gap:6px 12px}
+  .rung .label{grid-column:1/-1}
+  .brand span{display:none}
+  .steps .l{font-size:.92rem}
+}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><path d="M2 20 Q17 -4 32 20" fill="none" stroke="var(--after)" stroke-width="3" stroke-linecap="round"/><path d="M2 20 H32" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/></svg>
+    <div><strong>LearnBridge</strong><span>Training impact, from needs to results</span></div>
+  </div>
+  <div class="role" role="tablist" aria-label="View">
+    <button role="tab" data-role="learner" aria-selected="true">Participant</button>
+    <button role="tab" data-role="admin" aria-selected="false">Training team</button>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<footer class="site">
+  <p>LearnBridge is a portfolio prototype by Gu Jinrong. All participant data is simulated. <a class="link" href="https://github.com/Joey6Goodman/learnbridge">Source code and evaluation report on GitHub</a></p>
+  <button class="link" id="reset">Reset my demo data</button>
+</footer>
+
+<div class="overlay" id="csv" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="csv-title">
+    <div class="sheet-head"><h2 id="csv-title">learnbridge-enrollments.csv</h2><button class="btn ghost small" id="csv-close">Close</button></div>
+    <p class="muted" id="csv-meta"></p>
+    <textarea id="csv-text" readonly aria-label="CSV data"></textarea>
+    <div class="actions"><button class="btn" id="csv-dl">Download file</button><button class="btn ghost" id="csv-copy">Copy all</button></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<script>
+/* ---------- Reference data ---------- */
+const SKILLS = [
+  {id:'sdg',     name:'Localizing the SDGs',        short:'SDG localization',   desc:'Turning global goals into local plans, budgets and targets.'},
+  {id:'data',    name:'Data for policymaking',      short:'Data for policy',    desc:'Finding, reading and using public data to support decisions.'},
+  {id:'climate', name:'Climate resilience planning',short:'Climate resilience', desc:'Assessing climate risk and building it into city plans.'},
+  {id:'digital', name:'Digital public services',    short:'Digital services',   desc:'Designing online services people can actually use.'},
+  {id:'stake',   name:'Stakeholder engagement',     short:'Stakeholders',       desc:'Running consultations and building agreement across groups.'},
+  {id:'pm',      name:'Project design and M&E',     short:'Project M&E',        desc:'Writing results frameworks and tracking progress against them.'}
+];
+const LEVELS = ['New to this','Know the basics','Can do it with support','Can do it on my own','Could teach it'];
+const COURSES = [
+  {id:'c1', skill:'sdg',     title:'SDG Localization in Practice',                 format:'Online',          weeks:4, modules:['Why localization matters','Mapping local plans to SDG targets','Reporting progress through voluntary local reviews']},
+  {id:'c2', skill:'data',    title:'Evidence for Policy: Working with Public Data',format:'Online',          weeks:5, modules:['Where public data lives','Reading indicators without fooling yourself','Turning analysis into a policy brief']},
+  {id:'c3', skill:'climate', title:'Planning Resilient Cities',                    format:'Hybrid, Bangkok', weeks:6, modules:['Reading a climate risk map','Nature-based solutions','Putting resilience into land-use rules']},
+  {id:'c4', skill:'digital', title:'Designing Digital Public Services',            format:'Online',          weeks:4, modules:['Starting from user needs','Simplifying forms and steps','Measuring whether a service works']},
+  {id:'c5', skill:'stake',   title:'Facilitating Multi-stakeholder Dialogue',      format:'Hybrid, Bangkok', weeks:3, modules:['Mapping who has a stake','Designing a fair consultation','Handling conflict in the room']},
+  {id:'c6', skill:'pm',      title:'Results-based Project Management',             format:'Online',          weeks:5, modules:['From problem to theory of change','Indicators, baselines and targets','Monitoring that people actually use']}
+];
+const APPLIED  = {regular:'Yes, regularly', once:'Yes, once or twice', not:'Not yet'};
+const BARRIERS = {no_chance:'No chance to use it yet', support:'Not enough support from my team', practice:'I need more practice', other:'Something else'};
+const COUNTRIES = ['Thailand','Viet Nam','Indonesia','Philippines','Cambodia','Lao PDR','Malaysia','Myanmar','Bangladesh','Nepal','Sri Lanka','Mongolia'];
+const ROLES = ['Urban planner','Policy officer','Municipal administrator','Budget analyst','Programme manager','Statistics officer','Environment officer','IT lead, city government'];
+const STORIES = {
+  sdg:     'We mapped our district budget lines to SDG targets for the first time. The council now asks for that mapping every year.',
+  data:    'I rebuilt our monthly report around three indicators instead of thirty. Staffing decisions now take one meeting, not three.',
+  climate: 'Our flood risk map is now part of the permit process for new housing in two wards.',
+  digital: 'We cut the business licence form from nine pages to two and moved it online. Processing time dropped from weeks to days.',
+  stake:   'I ran the consultation with fishing communities myself, using the facilitation method from the course. They asked for a second round.',
+  pm:      'Our new proposal had a results framework with baselines. The donor approved it on the first submission.'
+};
+const skill  = id => SKILLS.find(s => s.id === id);
+const course = id => COURSES.find(c => c.id === id);
+
+/* ---------- Saved state (this browser only) ---------- */
+const KEY = 'learnbridge-v1';
+const blank = () => ({pre:null, post:null, enrolled:[], done:{}, feedback:{}, followup:null});
+function load(){ try{ const raw = localStorage.getItem(KEY); if(raw) return Object.assign(blank(), JSON.parse(raw)); }catch(e){} return blank(); }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+let S = load();
+
+/* ---------- UI state ---------- */
+let view = location.hash === '#admin' ? 'admin' : 'learner';
+let step = 1, editing = false, draft = {}, reportDraft = {}, adminFilter = 'all', charts = [];
+
+const app = document.getElementById('app');
+const $ = sel => document.querySelector(sel);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const isComplete = cid => (S.done[cid] || []).length === course(cid).modules.length;
+const completedCourses = () => S.enrolled.filter(isComplete);
+const stepsDone = () => [!!S.pre, completedCourses().length > 0, !!S.post, !!S.followup];
+
+/* ---------- Simulated cohort (seeded, so it is the same every time) ---------- */
+function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function buildSeed(){
+  const r = rng(20261105), pick = a => a[Math.floor(r() * a.length)], clamp = v => Math.max(1, Math.min(5, v));
+  const people = [];
+  for(let i = 1; i <= 120; i++){
+    const pre = {}, tie = {};
+    SKILLS.forEach(s => { pre[s.id] = 1 + Math.floor(r() * 3.4); tie[s.id] = r(); });
+    const order = [...SKILLS].sort((a, b) => pre[a.id] - pre[b.id] || tie[a.id] - tie[b.id]);
+    const n = r() < 0.3 ? 2 : 1, targets = [];
+    for(let k = 0; k < n; k++){
+      let sk = r() < 0.75 ? order[k].id : pick(SKILLS).id;
+      if(targets.includes(sk)) sk = order[k + 2].id;
+      if(!targets.includes(sk)) targets.push(sk);
+    }
+    const enrollments = targets.map(sk => {
+      const c = COURSES.find(c => c.skill === sk);
+      const completed = r() < 0.8;
+      let rating = null, followup = null;
+      if(completed){
+        const u = r(); rating = u < 0.42 ? 5 : u < 0.80 ? 4 : u < 0.94 ? 3 : 2;
+        if(r() < 0.68){
+          const a = r(), applied = a < 0.40 ? 'regular' : a < 0.70 ? 'once' : 'not';
+          if(applied === 'not'){ const b = r(); followup = {applied, barrier: b < 0.4 ? 'no_chance' : b < 0.7 ? 'support' : b < 0.9 ? 'practice' : 'other'}; }
+          else { const change = r() < 0.5; followup = {applied, change, story: change && r() < 0.35 ? STORIES[sk] : ''}; }
+        }
+      }
+      return {course:c.id, completed, rating, followup};
+    });
+    let post = null;
+    if(enrollments.some(e => e.completed) && r() < 0.9){
+      post = {...pre};
+      SKILLS.forEach(s => { if(r() < 0.2) post[s.id] = clamp(post[s.id] + 1); });
+      enrollments.filter(e => e.completed).forEach(e => {
+        const sk = course(e.course).skill, u = r();
+        post[sk] = clamp(pre[sk] + (u < 0.15 ? 0 : u < 0.65 ? 1 : 2));
+      });
+    }
+    people.push({id:'P' + String(i).padStart(3, '0'), country:pick(COUNTRIES), role:pick(ROLES), pre, post, enrollments});
+  }
+  return people;
+}
+const SEED = buildSeed();
+
+function userRecord(){
+  if(!S.pre && !S.enrolled.length) return null;
+  return {id:'YOU', country:'', role:'You (this browser)', mine:true, pre:S.pre, post:S.post,
+    enrollments: S.enrolled.map(cid => {
+      const completed = isComplete(cid), fb = S.feedback[cid];
+      const f = S.followup && S.followup.course === cid ? S.followup : null;
+      return {course:cid, completed, rating: completed && fb && fb.saved ? fb.rating : null,
+        followup: f ? {applied:f.applied, change:f.change, barrier:f.barrier, story:f.story || ''} : null};
+    })};
+}
+const cohort = () => { const u = userRecord(); return u ? [...SEED, u] : SEED; };
+
+function stats(filter){
+  const rows = [];
+  cohort().forEach(p => p.enrollments.forEach(e => { if(filter === 'all' || e.course === filter) rows.push({p, e}); }));
+  const gainOK = x => { const sk = course(x.e.course).skill; return x.e.completed && x.p.pre && x.p.post && x.p.post[sk] - x.p.pre[sk] >= 1; };
+  const fu = rows.filter(x => x.e.followup);
+  return {
+    rows, enrolled: rows.length,
+    completed: rows.filter(x => x.e.completed).length,
+    l1: rows.filter(x => x.e.rating >= 4).length,
+    l2: rows.filter(gainOK).length,
+    l3: fu.filter(x => x.e.followup.applied !== 'not').length,
+    l4: fu.filter(x => x.e.followup.change === true).length,
+    fu: fu.length
+  };
+}
+
+/* ---------- Charts ---------- */
+function hexA(h, a){ h = h.replace('#', ''); if(h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; }
+function themeCharts(){ if(typeof Chart === 'undefined') return; Chart.defaults.font.family = "'Public Sans', system-ui, sans-serif"; Chart.defaults.color = css('--muted'); Chart.defaults.borderColor = css('--line'); }
+function makeChart(id, config){
+  const cv = document.getElementById(id); if(!cv) return;
+  if(typeof Chart === 'undefined'){ cv.parentElement.innerHTML = '<p class="muted">Charts need an internet connection to load.</p>'; return; }
+  charts.push(new Chart(cv, config));
+}
+function clearCharts(){ charts.forEach(c => c.destroy()); charts = []; }
+function drawRadar(id, sets){
+  makeChart(id, {type:'radar',
+    data:{labels:SKILLS.map(s => s.short), datasets:sets.map(s => ({label:s.label, data:SKILLS.map(k => s.data[k.id]), borderColor:s.color, backgroundColor:hexA(s.color, .16), pointBackgroundColor:s.color, borderWidth:2, borderDash:s.dash ? [5, 4] : []}))},
+    options:{maintainAspectRatio:false, scales:{r:{min:0, max:5, ticks:{stepSize:1, display:false}, grid:{color:css('--line')}, angleLines:{color:css('--line')}, pointLabels:{color:css('--ink'), font:{size:12}}}},
+      plugins:{legend:{display:sets.length > 1, position:'bottom'}}}});
+}
+
+/* ---------- Participant view ---------- */
+function renderLearner(){
+  const done = stepsDone(), labels = ['Assess', 'Learn', 'Reassess', 'Report back'];
+  app.innerHTML = `
+  <section class="hero">
+    <h1>Start with what you need to learn. Come back later to show what changed.</h1>
+    <p>LearnBridge follows one training from the first skills check to the difference it makes at work, 90 days on.</p>
+  </section>
+  <ol class="steps">${labels.map((l, i) => `<li><button data-action="step" data-step="${i + 1}" class="${step === i + 1 ? 'active' : ''} ${done[i] ? 'done' : ''}" ${step === i + 1 ? 'aria-current="step"' : ''}><span class="n">Step ${i + 1}${done[i] ? ', done' : ''}</span><span class="l">${l}</span></button></li>`).join('')}</ol>
+  <div id="stage"></div>`;
+  const stage = $('#stage');
+  ({1:renderAssess, 2:renderLearn, 3:renderReassess, 4:renderReport})[step](stage);
+}
+
+function assessForm(kind){
+  const before = kind === 'post' ? S.pre : null;
+  const answered = SKILLS.filter(s => draft[s.id]).length;
+  return `<form id="assess" onsubmit="return false">${SKILLS.map(s => `
+    <fieldset class="skill"><legend><strong>${s.name}</strong><span>${s.desc}</span></legend>
+      <div class="scale">${[1,2,3,4,5].map(v => `<label><input type="radio" name="${s.id}" value="${v}" ${draft[s.id] === v ? 'checked' : ''} aria-label="${s.name}: ${v}, ${LEVELS[v - 1]}"><span class="${before && before[s.id] === v ? 'was' : ''}">${v}</span></label>`).join('')}</div>
+      <p class="level" id="lv-${s.id}">${draft[s.id] ? LEVELS[draft[s.id] - 1] : 'Choose a level'}${before ? `<em>Before: ${before[s.id]}</em>` : ''}</p>
+    </fieldset>`).join('')}
+    <div class="actions"><span class="count" id="count">${answered} of ${SKILLS.length} answered</span>
+      <button class="btn" type="button" id="submit-assess" data-action="submit-${kind}" ${answered < SKILLS.length ? 'disabled' : ''}>${kind === 'pre' ? 'See my skills profile' : 'Compare with my first check'}</button></div>
+  </form>`;
+}
+
+function renderAssess(stage){
+  if(S.pre && !editing){
+    const growth = [...SKILLS].sort((a, b) => S.pre[a.id] - S.pre[b.id]).slice(0, 2);
+    stage.innerHTML = `<div class="two">
+      <div><h2>Your skills profile</h2>
+        <div class="chart-wrap radar"><canvas id="radar-pre" role="img" aria-label="Radar chart of your self-assessed skills"></canvas></div>
+        <button class="btn ghost small" data-action="edit-pre">Retake the check</button></div>
+      <div><h2>Where to grow next</h2><p class="muted">Your two lowest areas, with a course for each.</p>
+        ${growth.map(s => `<div class="rec"><p class="rec-skill">${s.name}</p><p class="muted">You rated yourself ${S.pre[s.id]} of 5.</p>${courseRow(COURSES.find(c => c.skill === s.id))}</div>`).join('')}
+        <div class="actions"><button class="btn" data-action="step" data-step="2">Go to my courses</button></div></div>
+    </div>`;
+    drawRadar('radar-pre', [{label:'Your first check', data:S.pre, color:css('--teal')}]);
+    return;
+  }
+  stage.innerHTML = `<div class="intro"><h2>How confident are you in each area today?</h2>
+    <p>Answer honestly. Your answers are used to recommend courses, and later to measure your progress.</p>
+    <p class="key">1 means ${LEVELS[0].toLowerCase()}. 5 means you ${LEVELS[4].toLowerCase()}.</p></div>${assessForm('pre')}`;
+}
+
+function courseRow(c){
+  const on = S.enrolled.includes(c.id);
+  return `<div class="course"><div><h3>${c.title}</h3><p class="muted">${c.format}, ${c.weeks} weeks. Skill: ${skill(c.skill).name}</p></div>
+    <button class="btn small ${on ? 'ghost' : ''}" data-action="enroll" data-course="${c.id}" aria-pressed="${on}">${on ? 'Enrolled' : 'Enroll'}</button></div>`;
+}
+
+function feedbackHTML(c){
+  const fb = S.feedback[c.id] || {}, r = fb.rating || 0;
+  if(fb.saved) return `<div class="feedback"><p><strong>Feedback saved.</strong> You rated this course ${fb.rating} of 5.</p><button class="link" data-action="edit-fb" data-course="${c.id}">Change feedback</button></div>`;
+  return `<div class="feedback"><p><strong>How useful was this course for your work?</strong></p>
+    <div class="stars" role="radiogroup" aria-label="Rating">${[1,2,3,4,5].map(v => `<button type="button" role="radio" aria-checked="${v === r}" aria-label="${v} of 5" class="${v <= r ? 'on' : ''}" data-action="rate" data-course="${c.id}" data-v="${v}">★</button>`).join('')}</div>
+    <textarea id="fb-${c.id}" rows="2" placeholder="What would make it more useful? (optional)">${esc(fb.comment || '')}</textarea>
+    <button class="btn small" data-action="save-fb" data-course="${c.id}" ${r ? '' : 'disabled'}>Save feedback</button></div>`;
+}
+
+function renderLearn(stage){
+  const mine = S.enrolled.map(course);
+  let h = `<h2>My courses</h2>`;
+  if(!mine.length) h += `<p class="empty">You haven’t enrolled in a course yet. Take the skills check for recommendations, or choose from the catalogue below.</p>`;
+  h += mine.map(c => {
+    const d = S.done[c.id] || [], pct = Math.round(d.length / c.modules.length * 100);
+    return `<article class="mycourse"><header><h3>${c.title}</h3><span class="muted">${pct}% complete</span></header>
+      <div class="progress" role="progressbar" aria-label="Progress" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
+      <ul class="modules">${c.modules.map((m, i) => `<li><label><input type="checkbox" data-module="${i}" data-course="${c.id}" ${d.includes(i) ? 'checked' : ''}> ${m}</label></li>`).join('')}</ul>
+      ${pct === 100 ? feedbackHTML(c) : ''}</article>`;
+  }).join('');
+  h += `<h2 class="gap">Course catalogue</h2>${COURSES.map(courseRow).join('')}`;
+  stage.innerHTML = h;
+}
+
+function renderReassess(stage){
+  if(!S.pre){ stage.innerHTML = `<p class="empty">Take the first skills check before you reassess.</p><button class="btn" data-action="step" data-step="1">Take the skills check</button>`; return; }
+  if(S.post && !editing){
+    const gained = SKILLS.filter(s => S.post[s.id] > S.pre[s.id]).length;
+    stage.innerHTML = `<div class="two">
+      <div><h2>Before and after</h2><div class="chart-wrap radar"><canvas id="radar-cmp" role="img" aria-label="Radar chart comparing your skills before and after training"></canvas></div></div>
+      <div><h2>${gained ? `You moved up in ${gained} of ${SKILLS.length} areas` : 'No change yet'}</h2>
+        <ul class="deltas">${SKILLS.map(s => { const d = S.post[s.id] - S.pre[s.id]; return `<li><span>${s.name}</span><span class="delta ${d > 0 ? 'up' : ''}">${S.pre[s.id]} to ${S.post[s.id]}${d ? ` (${d > 0 ? '+' : '−'}${Math.abs(d)})` : ''}</span></li>`; }).join('')}</ul>
+        <div class="actions"><button class="btn ghost small" data-action="edit-post">Retake</button><button class="btn" data-action="step" data-step="4">Continue to report back</button></div></div>
+    </div>`;
+    drawRadar('radar-cmp', [{label:'Before', data:S.pre, color:css('--before'), dash:true}, {label:'After', data:S.post, color:css('--after')}]);
+    return;
+  }
+  const note = completedCourses().length ? '' : `<p class="note">You haven’t finished a course yet. You can still reassess, but the comparison means more after training.</p>`;
+  stage.innerHTML = `<div class="intro"><h2>Same questions, after training</h2><p>Your first answers are underlined in grey so you can see where you started.</p></div>${note}${assessForm('post')}`;
+}
+
+function branchHTML(f){
+  if(f.applied === 'regular' || f.applied === 'once') return `
+    <fieldset class="choices"><legend>Did it lead to a change in your team or organisation?</legend>
+      <label><input type="radio" name="change" value="yes" ${f.change === true ? 'checked' : ''}> Yes</label>
+      <label><input type="radio" name="change" value="no" ${f.change === false ? 'checked' : ''}> Not yet</label></fieldset>
+    <label class="field"><span>Describe what changed, in a sentence or two (optional)</span>
+      <textarea name="story" rows="3" placeholder="For example: we moved the permit form online and cut processing time.">${esc(f.story || '')}</textarea></label>`;
+  if(f.applied === 'not') return `<fieldset class="choices"><legend>What got in the way?</legend>${Object.entries(BARRIERS).map(([k, v]) => `<label><input type="radio" name="barrier" value="${k}" ${f.barrier === k ? 'checked' : ''}> ${v}</label>`).join('')}</fieldset>`;
+  return '';
+}
+const canSend = f => !!f.applied && (f.applied === 'not' ? !!f.barrier : typeof f.change === 'boolean');
+
+function renderReport(stage){
+  const done = completedCourses();
+  if(!done.length){ stage.innerHTML = `<p class="empty">Finish a course first. Then you can report how you used it at work.</p><button class="btn" data-action="step" data-step="2">Go to my courses</button>`; return; }
+  if(S.followup && !editing){
+    stage.innerHTML = `<div class="sent"><h2>Report sent</h2><p>Your answer for <strong>${course(S.followup.course).title}</strong> is now counted in the training team’s impact report.</p>
+      <div class="actions"><button class="btn" data-action="view-admin">See the impact report</button><button class="btn ghost small" data-action="edit-report">Edit my report</button></div></div>`;
+    return;
+  }
+  if(!done.includes(reportDraft.course)) reportDraft.course = done[0];
+  const f = reportDraft;
+  stage.innerHTML = `<div class="intro"><h2>90 days on: did it make a difference?</h2><p>A few minutes now shows the training team which courses lead to real change.</p></div>
+    <p class="note">In a live deployment, this form is emailed to participants 90 days after their course ends. In this demo you can open it any time.</p>
+    <form id="report" class="report" onsubmit="return false">
+      <label class="field"><span>Which course are you reporting on?</span><select name="course">${done.map(id => `<option value="${id}" ${f.course === id ? 'selected' : ''}>${course(id).title}</option>`).join('')}</select></label>
+      <fieldset class="choices"><legend>Have you used what you learned at work?</legend>${Object.entries(APPLIED).map(([k, v]) => `<label><input type="radio" name="applied" value="${k}" ${f.applied === k ? 'checked' : ''}> ${v}</label>`).join('')}</fieldset>
+      <div id="branch">${branchHTML(f)}</div>
+      <button class="btn" type="button" data-action="send-report" ${canSend(f) ? '' : 'disabled'}>Send report</button>
+    </form>`;
+}
+function readReport(){
+  const form = $('#report'); if(!form) return;
+  const fd = new FormData(form), ch = fd.get('change'), story = form.querySelector('[name=story]');
+  reportDraft.course = fd.get('course');
+  reportDraft.applied = fd.get('applied') || undefined;
+  if(ch !== null) reportDraft.change = ch === 'yes';
+  if(fd.get('barrier')) reportDraft.barrier = fd.get('barrier');
+  if(story) reportDraft.story = story.value;
+}
+
+/* ---------- Training team view ---------- */
+function renderAdmin(){
+  const st = stats(adminFilter), pct = n => st.enrolled ? Math.round(n / st.enrolled * 100) : 0, me = userRecord();
+  const rungs = [
+    {stage:'Enrolled',  text:'Started the course', n:st.enrolled, cls:'base'},
+    {stage:'Reaction',  text:'Rated the course 4 or 5 out of 5', n:st.l1},
+    {stage:'Learning',  text:'Moved up at least one level in the course’s target skill', n:st.l2},
+    {stage:'Behaviour', text:'Used it at work within 90 days', n:st.l3},
+    {stage:'Results',   text:'Reported a change in their team or organisation', n:st.l4}
+  ];
+  // per-course table
+  const table = COURSES.map(c => {
+    const s = stats(c.id), rated = s.rows.filter(x => x.e.rating), withBoth = s.rows.filter(x => x.e.completed && x.p.pre && x.p.post);
+    const avgR = rated.length ? (rated.reduce((a, x) => a + x.e.rating, 0) / rated.length).toFixed(1) : '–';
+    const avgG = withBoth.length ? (withBoth.reduce((a, x) => a + x.p.post[c.skill] - x.p.pre[c.skill], 0) / withBoth.length).toFixed(2) : '–';
+    return `<tr><td>${c.title}</td><td class="num">${s.enrolled}</td><td class="num">${s.enrolled ? Math.round(s.completed / s.enrolled * 100) : 0}%</td><td class="num">${avgR}</td><td class="num">${avgG === '–' ? avgG : '+' + avgG}</td><td class="num">${s.enrolled ? Math.round(s.l4 / s.enrolled * 100) : 0}%</td></tr>`;
+  }).join('');
+  // stories: yours first, one per text
+  const seen = new Set(), stories = st.rows.filter(x => x.e.followup && x.e.followup.story)
+    .sort((a, b) => (b.p.mine ? 1 : 0) - (a.p.mine ? 1 : 0))
+    .filter(x => { if(seen.has(x.e.followup.story)) return false; seen.add(x.e.followup.story); return true; }).slice(0, 3);
+
+  app.innerHTML = `
+  <section class="hero admin"><h1>Impact report</h1>
+    <p>How many participants made it from enrolling to changing something at work. Based on 120 simulated participants${me ? ', plus your own entries from the participant view' : ''}.</p>
+    <label class="filter"><span>Course</span><select id="filter"><option value="all">All courses</option>${COURSES.map(c => `<option value="${c.id}" ${adminFilter === c.id ? 'selected' : ''}>${c.title}</option>`).join('')}</select></label>
+  </section>
+  <section class="ladder" id="ladder" aria-label="Impact ladder">${rungs.map(r => `
+    <div class="rung ${r.cls || ''}"><div class="label"><small>${r.stage}</small><span>${r.text}</span></div>
+      <div class="bar" aria-hidden="true"><i style="--w:${pct(r.n)}%"></i></div>
+      <div class="fig"><strong>${pct(r.n)}%</strong><span>${r.n} of ${st.enrolled}</span></div></div>`).join('')}
+  </section>
+  <p class="foot muted">${st.fu} of ${st.completed} participants who finished a course answered the 90-day follow-up. Every percentage is out of everyone who enrolled, so the drop-off at each stage stays visible.</p>
+
+  <div class="two gap">
+    <div><h2>Skills before and after</h2><p class="muted">Average self-rating among participants who took both checks.</p>
+      <div class="chart-wrap"><canvas id="ch-skills" role="img" aria-label="Bar chart of average skill ratings before and after training"></canvas></div></div>
+    <div><h2>What got in the way</h2><p class="muted">Participants who had not yet used the training at work.</p>
+      <div class="chart-wrap short"><canvas id="ch-barriers" role="img" aria-label="Bar chart of reasons participants had not applied the training"></canvas></div></div>
+  </div>
+
+  <h2 class="gap">By course</h2>
+  <div class="table-wrap"><table><thead><tr><th>Course</th><th class="num">Enrolled</th><th class="num">Completed</th><th class="num">Avg rating</th><th class="num">Avg skill gain</th><th class="num">Reported change</th></tr></thead><tbody>${table}</tbody></table></div>
+
+  <h2 class="gap">From the field</h2>
+  ${stories.length ? `<div class="stories">${stories.map(x => `<blockquote><p>“${esc(x.e.followup.story)}”</p><footer>${x.p.mine ? 'You, just now' : `${x.p.role}, ${x.p.country}`}. ${course(x.e.course).title}</footer></blockquote>`).join('')}</div>` : `<p class="empty">No stories reported for this course yet.</p>`}
+
+  <div class="gap"><h2>Export</h2><p class="muted">One row per enrollment, with before and after scores for every skill. Ready for analysis in Python or Excel.</p>
+    <button class="btn" data-action="export">Export CSV</button></div>`;
+
+  requestAnimationFrame(() => requestAnimationFrame(() => { const l = $('#ladder'); if(l) l.classList.add('grown'); }));
+
+  const people = [...new Set(st.rows.map(x => x.p))].filter(p => p.pre && p.post);
+  const avg = key => SKILLS.map(s => people.length ? +(people.reduce((a, p) => a + p[key][s.id], 0) / people.length).toFixed(2) : 0);
+  makeChart('ch-skills', {type:'bar',
+    data:{labels:SKILLS.map(s => s.short), datasets:[
+      {label:'Before', data:avg('pre'),  backgroundColor:css('--before'), borderRadius:3},
+      {label:'After',  data:avg('post'), backgroundColor:css('--after'),  borderRadius:3}]},
+    options:{maintainAspectRatio:false, scales:{y:{min:0, max:5, ticks:{stepSize:1}}, x:{grid:{display:false}}}, plugins:{legend:{position:'bottom'}}}});
+
+  const notYet = st.rows.filter(x => x.e.followup && x.e.followup.applied === 'not');
+  const counts = Object.keys(BARRIERS).map(k => notYet.filter(x => x.e.followup.barrier === k).length);
+  if(!notYet.length){ $('#ch-barriers').parentElement.innerHTML = '<p class="empty">Everyone who replied has used the training.</p>'; }
+  else makeChart('ch-barriers', {type:'bar',
+    data:{labels:Object.values(BARRIERS), datasets:[{data:counts, backgroundColor:css('--teal'), borderRadius:3}]},
+    options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{precision:0}}, y:{grid:{display:false}}}}});
+}
+
+/* ---------- CSV export ---------- */
+const csvCell = v => { v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+function toCsv(){
+  const head = ['participant_id','country','role','course_id','course','target_skill','completed','rating',
+    ...SKILLS.map(s => 'pre_' + s.id), ...SKILLS.map(s => 'post_' + s.id), 'followup_applied','org_change','barrier','story'];
+  const lines = [head.join(',')];
+  cohort().forEach(p => p.enrollments.forEach(e => {
+    const c = course(e.course), f = e.followup || {};
+    lines.push([p.id, p.country, p.role, c.id, c.title, c.skill, e.completed ? 1 : 0, e.rating ?? '',
+      ...SKILLS.map(s => p.pre ? p.pre[s.id] : ''), ...SKILLS.map(s => p.post ? p.post[s.id] : ''),
+      f.applied || '', f.change === true ? 1 : f.change === false ? 0 : '', f.barrier || '', f.story || ''].map(csvCell).join(','));
+  }));
+  return lines.join('\n');
+}
+function openCsv(){
+  const text = toCsv();
+  $('#csv-text').value = text;
+  $('#csv-meta').textContent = `${text.split('\n').length - 1} rows. If the download button doesn’t work here, use Copy all and paste into a text file.`;
+  $('#csv').hidden = false; $('#csv-close').focus();
+}
+$('#csv-close').addEventListener('click', () => { $('#csv').hidden = true; });
+$('#csv').addEventListener('click', e => { if(e.target.id === 'csv') $('#csv').hidden = true; });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') $('#csv').hidden = true; });
+$('#csv-dl').addEventListener('click', () => {
+  const blob = new Blob(['\ufeff' + $('#csv-text').value], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'learnbridge-enrollments.csv';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+$('#csv-copy').addEventListener('click', async e => {
+  const ta = $('#csv-text'), btn = e.currentTarget;
+  try{ await navigator.clipboard.writeText(ta.value); }catch(err){ ta.select(); try{ document.execCommand('copy'); }catch(e2){} }
+  btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = 'Copy all'; }, 1600);
+});
+
+/* ---------- Navigation and events ---------- */
+function render(){
+  clearCharts(); themeCharts();
+  document.querySelectorAll('[data-role]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.role === view)));
+  view === 'admin' ? renderAdmin() : renderLearner();
+}
+function goStep(n){ step = n; editing = false; draft = {}; reportDraft = {}; render(); window.scrollTo({top:0}); }
+function setView(v){ view = v; render(); window.scrollTo({top:0}); }
+function firstStep(){ const i = stepsDone().indexOf(false); return i === -1 ? 4 : i + 1; }
+
+document.querySelector('.role').addEventListener('click', e => { const b = e.target.closest('[data-role]'); if(b) setView(b.dataset.role); });
+
+app.addEventListener('click', e => {
+  const b = e.target.closest('[data-action]'); if(!b || b.disabled) return;
+  const cid = b.dataset.course;
+  switch(b.dataset.action){
+    case 'step': goStep(+b.dataset.step); break;
+    case 'submit-pre':  S.pre  = {...draft}; editing = false; save(); render(); break;
+    case 'submit-post': S.post = {...draft}; editing = false; save(); render(); break;
+    case 'edit-pre':  editing = true; draft = {...S.pre};  render(); break;
+    case 'edit-post': editing = true; draft = {...S.post}; render(); break;
+    case 'enroll':
+      S.enrolled = S.enrolled.includes(cid) ? S.enrolled.filter(x => x !== cid) : [...S.enrolled, cid];
+      save(); render(); break;
+    case 'rate': { const ta = document.getElementById('fb-' + cid); S.feedback[cid] = {rating:+b.dataset.v, comment:ta ? ta.value : '', saved:false}; save(); render(); break; }
+    case 'save-fb': { const ta = document.getElementById('fb-' + cid); S.feedback[cid] = {...S.feedback[cid], comment:ta ? ta.value : '', saved:true}; save(); render(); break; }
+    case 'edit-fb': S.feedback[cid].saved = false; save(); render(); break;
+    case 'send-report': {
+      readReport();
+      const f = {course:reportDraft.course, applied:reportDraft.applied};
+      if(f.applied === 'not') f.barrier = reportDraft.barrier;
+      else { f.change = reportDraft.change; f.story = (reportDraft.story || '').trim(); }
+      S.followup = f; editing = false; save(); render(); break;
+    }
+    case 'edit-report': editing = true; reportDraft = {...S.followup}; render(); break;
+    case 'view-admin': setView('admin'); break;
+    case 'export': openCsv(); break;
+  }
+});
+
+app.addEventListener('change', e => {
+  const t = e.target;
+  if(t.dataset.module !== undefined){
+    const c = t.dataset.course, i = +t.dataset.module, d = new Set(S.done[c] || []);
+    t.checked ? d.add(i) : d.delete(i);
+    S.done[c] = [...d].sort((a, b) => a - b); save(); render(); return;
+  }
+  if(t.closest('#assess') && t.type === 'radio'){
+    draft[t.name] = +t.value;
+    const before = step === 3 ? S.pre : null;
+    $('#lv-' + t.name).innerHTML = LEVELS[+t.value - 1] + (before ? `<em>Before: ${before[t.name]}</em>` : '');
+    const n = SKILLS.filter(s => draft[s.id]).length;
+    $('#count').textContent = `${n} of ${SKILLS.length} answered`;
+    $('#submit-assess').disabled = n < SKILLS.length;
+    return;
+  }
+  if(t.id === 'filter'){ adminFilter = t.value; render(); return; }
+  if(t.closest('#report')){
+    readReport();
+    if(t.name === 'applied') $('#branch').innerHTML = branchHTML(reportDraft);
+    document.querySelector('[data-action="send-report"]').disabled = !canSend(reportDraft);
+  }
+});
+app.addEventListener('input', e => { if(e.target.closest('#report')) readReport(); });
+
+$('#reset').addEventListener('click', () => {
+  S = blank(); try{ localStorage.removeItem(KEY); }catch(e){}
+  view = 'learner'; goStep(1);
+});
+
+const mq = window.matchMedia('(prefers-color-scheme: dark)');
+if(mq.addEventListener) mq.addEventListener('change', render);
+
+step = firstStep();
+render();
+</script>
+</body>
+</html>
